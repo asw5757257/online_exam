@@ -24,6 +24,7 @@ public class SubjectController {
     private static final Logger logger = LoggerFactory.getLogger(SubjectController.class);
     @Autowired
     private SubjectService subjectService;
+
     @RequestMapping("/allSubject")
     public Dto list(@RequestParam(value = "start",defaultValue = "0")int start,
                     @RequestParam(value = "size",defaultValue = "5")int size){
@@ -34,7 +35,12 @@ public class SubjectController {
             logger.info("当前数据{}",list);
             return Dto.getSuccess(list);
 
-        }catch (Exception e){
+        }catch (MyException e){
+            e.printStackTrace();
+            logger.error("当前页面为空");
+            return Dto.getFailed();
+        }
+        catch (Exception e){
             e.printStackTrace();
             logger.error("出现异常");
             return Dto.getFailed();

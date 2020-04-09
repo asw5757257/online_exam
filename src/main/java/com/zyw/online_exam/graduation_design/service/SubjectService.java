@@ -30,16 +30,12 @@ public class SubjectService {
     /*public List<Subject> getAll(){
         return subjectDao.findAll();
     }*/
-    public List<Subject> getAll(int start,int size){
+    public List<Subject> getAll(int start,int size)throws MyException{
         Pageable pageable = PageRequest.of(start,size);
         Page<Subject> page = subjectDao.findAll(pageable);
         List<Subject> lists = page.getContent();
         if(lists.size() == 0){
-            try {
-                throw new MyException("当前页面为空");
-            } catch (MyException e) {
-                e.printStackTrace();
-            }
+            throw new MyException("当前页面为空");
         }
         return lists;
     }
