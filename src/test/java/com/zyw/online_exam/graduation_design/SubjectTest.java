@@ -26,16 +26,14 @@ public class SubjectTest extends GraduationDesignApplicationTests {
     }
     @Test
     public void test2(){
-        subjectService.modify(1,"数学1");
+        subjectService.modify("数学","数学1");
 
     }
 
     @Test
     public void test3(){
-        Subject subject = new Subject();
-        subject.setId(6);
-        subject.setName("xxxx");
-        Dto.getFailed();
+        Subject subject = subjectService.getByName("物理1");
+        System.out.println(subject);
 
 
     }

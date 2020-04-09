@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -48,15 +49,13 @@ public class SubjectService {
         subject.setName(name);
         subjectDao.save(subject);
     }
-
+    @Transactional
     public void delete(String name){
-        Subject subject = new Subject();
-        subject.setName(name);
-        subjectDao.delete(subject);
+        subjectDao.deleteByName(name);
     }
 
-    public void modify(Integer id,String name){
-        Subject subject = subjectDao.findAllById(id);
+    public void modify(String beforeName,String name){
+        Subject subject = subjectDao.findAllByName(beforeName);
         subject.setName(name);
         subjectDao.save(subject);
     }

@@ -15,7 +15,7 @@ public interface SubjectDao extends JpaRepository<Subject,Integer> {
     Subject findAllByName(String name);
 
     Page<Subject> findAll(Pageable pageable);
-
+    void deleteByName(String name);
     Subject findAllById(Integer id);
 
 }

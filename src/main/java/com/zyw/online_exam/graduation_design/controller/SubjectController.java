@@ -24,14 +24,14 @@ public class SubjectController {
     private static final Logger logger = LoggerFactory.getLogger(SubjectController.class);
     @Autowired
     private SubjectService subjectService;
-    @RequestMapping("/subject")
+    @RequestMapping("/allSubject")
     public Dto list(@RequestParam(value = "start",defaultValue = "0")int start,
                     @RequestParam(value = "size",defaultValue = "5")int size){
         start = start>0?start:0;
         List<Subject> list;
         try {
              list = subjectService.getAll(start,size);
-            logger.info("当前数据",list);
+            logger.info("当前数据{}",list);
             return Dto.getSuccess(list);
 
         }catch (Exception e){
@@ -40,4 +40,62 @@ public class SubjectController {
             return Dto.getFailed();
         }
     }
+    @RequestMapping("/addSubject")
+    public Dto add(@RequestParam(value = "name") String name){
+        try {
+            Subject subject = subjectService.getByName(name);
+            if(subject != null){
+                logger.warn("重复添加已有科目");
+                return Dto.getFailed("重复添加已有科目");
+            }else{
+                subjectService.add(name);
+                logger.info("添加科目:{}",name);
+                return Dto.getSuccess();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("出现异常");
+            return Dto.getFailed();
+        }
+    }
+
+    @RequestMapping("/updateSubject")
+    public Dto update(@RequestParam(value = "beforeName") String beforeName,
+                      @RequestParam(value = "afterName")String afterName){
+        Subject subject = subjectService.getByName(beforeName);
+        try{
+            if(subject == null){
+                logger.error("数据库里无{}科目",beforeName);
+                return Dto.getFailed("数据库里无该科目");
+            }else{
+                subjectService.modify(beforeName,afterName);
+                logger.info("修改过后名字：{}",afterName);
+                return Dto.getSuccess();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("出现异常");
+            return Dto.getFailed();
+        }
+    }
+
+    @RequestMapping("deleteSubject")
+    public Dto delete(@RequestParam(value = "name")String name){
+        Subject subject = subjectService.getByName(name);
+        try {
+            if(subject == null){
+                logger.error("数据库里无{}科目",name);
+                return Dto.getFailed("数据库里无该科目");
+            }else{
+                subjectService.delete(name);
+                logger.info("删除{}科目成功",name);
+                return Dto.getSuccess("删除成功");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("出现异常");
+            return Dto.getFailed();
+        }
+    }
+
 }

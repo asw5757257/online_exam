@@ -25,9 +25,16 @@ public class Dto {
     public static Dto getSuccess(Object o){
         return new Dto(o,1);
     }
+    public static Dto getSuccess(){
+        return new Dto(1);
+    }
 
     public static Dto getFailed(){
         return new Dto(0);
+    }
+
+    public static Dto getFailed(Object oj){
+        return new Dto(oj,0);
     }
 
 }
