@@ -18,10 +18,7 @@ public class DepositoryTest extends GraduationDesignApplicationTests{
     private DepositoryService depositoryService;
     @Test
     public void test1(){
-        List<Depository> lists = depositoryService.getAll(0,2);
-        for(Depository depository:lists){
-            System.out.println(depository);
-        }
+
     }
     @Test
     public void test2(){

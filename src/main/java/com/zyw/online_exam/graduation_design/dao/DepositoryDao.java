@@ -15,7 +15,10 @@ import java.util.List;
  */
 public interface DepositoryDao extends JpaRepository<Depository,Integer> {
     Depository findAllByName(String name);
+
     void deleteByName(String name);
-    List<Depository> findAllBySubjectId(Integer sid);
+
     Page<Depository> findAllBySubjectId(Pageable pageable,Integer sid);
+
+    Depository findAllById(Integer id);
 }

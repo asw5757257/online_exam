@@ -30,16 +30,13 @@ public class DepositoryService {
         return depositoryDao.findAllByName(name);
     }
 
-    public List<Depository> getAll(int start, int size){
+    public List<Depository> getAll(int start, int size)throws MyException{
         Pageable pageable = PageRequest.of(start,size);
         Page<Depository> page = depositoryDao.findAll(pageable);
         List<Depository> lists = page.getContent();
         if(lists.size() == 0){
-            try {
-                throw new MyException("当前页面为空");
-            } catch (MyException e) {
-                e.printStackTrace();
-            }
+            throw new MyException("当前页面为空");
+
         }
         return lists;
     }
