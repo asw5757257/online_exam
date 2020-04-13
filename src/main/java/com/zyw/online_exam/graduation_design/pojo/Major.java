@@ -12,38 +12,30 @@ import java.util.Date;
 /**
  * @author cengyunwen
  * @version 1.0
- * @date 2020/4/9 16:09
+ * @date 2020/4/8 16:51
  */
-@Entity
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="question")
+@Entity
+@Table(name="major")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
 @EntityListeners(AuditingEntityListener.class)
-public class Question {
+public class Major {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String title;
+    private String name;
 
-    private String content;
-
-    private String answer;
-
-    private String type;
-
-    private String subject;
-
-    private String flag;
-
-    private Integer lastUpdatedBy;
+    private String grade;
 
     private Integer createdBy;
+
+    private Integer lastUpdatedBy;
 
     @CreatedDate
     @Column(name = "createTime",updatable = false,nullable = false)

@@ -1,9 +1,12 @@
 package com.zyw.online_exam.graduation_design;
 
+import com.zyw.online_exam.graduation_design.dao.MajorDao;
 import com.zyw.online_exam.graduation_design.exception.MyException;
+import com.zyw.online_exam.graduation_design.pojo.Major;
 import com.zyw.online_exam.graduation_design.pojo.Question;
-import com.zyw.online_exam.graduation_design.service.DepositoryService;
+import com.zyw.online_exam.graduation_design.pojo.Student;
 import com.zyw.online_exam.graduation_design.service.QuestionService;
+import com.zyw.online_exam.graduation_design.vo.QuestionVo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,44 +20,40 @@ import java.util.List;
 public class QuestionTest extends GraduationDesignApplicationTests{
     @Autowired
     private QuestionService questionService;
+    @Autowired
+    private MajorDao majorDao;
     @Test
     public void test1() throws MyException {
-        List<Question> list = questionService.getAll(1,2);
-        for(Question question :list){
+        List<QuestionVo> list = questionService.getAll(0,8);
+        for(QuestionVo question :list){
             System.out.println(question);
         }
     }
     @Test
     public void test2() throws MyException {
-        Question question = new Question();
-        question.setTitle("题干1");
-        question.setAnswer("答案1");
-        question.setType("1");
-        String sname = "数学";
-        String dname = "小学数学";
-        questionService.add(question,sname,dname);
+        QuestionVo questionVo = questionService.getById(1);
+        System.out.println(questionVo);
+
     }
     @Test
-    public void test4() throws MyException {
-        List<Question> list = questionService.getByDepository("初中数学",1,2);
-        for(Question question:list){
-            System.out.println(question);
-        }
+    public void test4()  {
+        Major major = new Major();
+        major.setName("测试");
+        major = majorDao.save(major);
+        System.out.println(major);
+
+
+
 
     }
     @Test
     public void test5(){
-        Question question = new Question();
-        question.setId(1);
-        //question.setType("1");
-        question.setTitle("题目1更新");
-        question.setAnswer("答案1更新");
-        questionService.update(question);
+
 
     }
     @Test
     public void test6(){
-        questionService.delete(7);
+
 
     }
 }

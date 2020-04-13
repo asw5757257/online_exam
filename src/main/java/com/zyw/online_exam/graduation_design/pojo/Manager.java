@@ -1,31 +1,32 @@
 package com.zyw.online_exam.graduation_design.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
 /**
  * @author cengyunwen
  * @version 1.0
- * @date 2020/4/9 11:09
+ * @date 2020/4/13 11:01
  */
+@Entity
 @Getter
 @Setter
 @ToString
-@Entity
-@Table(name="depository")
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name="manager")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
-public class Depository {
+public class Manager {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
+    private String username;
 
-    private Integer subjectId;
+    private String password;
 
+    private String role;
 }

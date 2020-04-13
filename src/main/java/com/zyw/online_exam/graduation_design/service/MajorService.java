@@ -1,13 +1,12 @@
 package com.zyw.online_exam.graduation_design.service;
 
-import com.zyw.online_exam.graduation_design.dao.SubjectDao;
+import com.zyw.online_exam.graduation_design.dao.MajorDao;
 import com.zyw.online_exam.graduation_design.exception.MyException;
-import com.zyw.online_exam.graduation_design.pojo.Subject;
+import com.zyw.online_exam.graduation_design.pojo.Major;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,21 +18,21 @@ import java.util.List;
  * @date 2020/4/8 17:00
  */
 @Service
-public class SubjectService {
+public class MajorService {
     @Autowired
-    private SubjectDao subjectDao;
+    private MajorDao majorDao;
 
-    public Subject getByName(String name){
-        return subjectDao.findAllByName(name);
+    public Major getByName(String name){
+        return majorDao.findAllByName(name);
     }
 
-    /*public List<Subject> getAll(){
-        return subjectDao.findAll();
+    /*public List<Major> getAll(){
+        return majorDao.findAll();
     }*/
-    public List<Subject> getAll(int start,int size)throws MyException{
+    public List<Major> getAll(int start, int size)throws MyException{
         Pageable pageable = PageRequest.of(start,size);
-        Page<Subject> page = subjectDao.findAll(pageable);
-        List<Subject> lists = page.getContent();
+        Page<Major> page = majorDao.findAll(pageable);
+        List<Major> lists = page.getContent();
         if(lists.size() == 0){
             throw new MyException("当前页面为空");
         }
@@ -41,18 +40,18 @@ public class SubjectService {
     }
 
     public void add(String name){
-        Subject subject = new Subject();
-        subject.setName(name);
-        subjectDao.save(subject);
+        Major major = new Major();
+        major.setName(name);
+        majorDao.save(major);
     }
     @Transactional
     public void delete(String name){
-        subjectDao.deleteByName(name);
+        majorDao.deleteByName(name);
     }
 
     public void modify(String beforeName,String name){
-        Subject subject = subjectDao.findAllByName(beforeName);
-        subject.setName(name);
-        subjectDao.save(subject);
+        Major major = majorDao.findAllByName(beforeName);
+        major.setName(name);
+        majorDao.save(major);
     }
 }
