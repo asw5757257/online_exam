@@ -43,13 +43,13 @@ public class PaperService {
     private PaperAndMajorDao paperAndMajorDao;
 
     //查询试卷
-    public Dto queryPaper(int start, int size) throws MyException {
+    public Dto queryPaper(int start, int size){
         Pageable pageable = PageRequest.of(start, size);
         Page<Paper> page = paperDao.findAll(pageable);
         List<Paper> lists = page.getContent();
 
         if (lists.size() == 0) {
-            throw new MyException("当前页面为空");
+            return Dto.getSuccess("当前没有信息");
 
         }
         return Dto.getSuccess(lists);
@@ -195,7 +195,6 @@ public class PaperService {
     }
 
     //删除试卷试题
-    @Transactional
     public Dto deleteQuestionFromPaper(Integer pid, Integer qid, Teacher teacher) {
         Paper paper = paperDao.findAllById(pid);
         if (paper.getCreatedBy().equals(teacher.getId())) {

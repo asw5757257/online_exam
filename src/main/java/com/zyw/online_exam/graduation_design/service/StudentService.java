@@ -158,9 +158,9 @@ public class StudentService {
         choiceQuestionVOList.add(choiceQuestionVO);
     }
     //学生交卷，计算分数
-    public Dto submitPaper(Integer pid,Student student,String questionAndanswer){
+    public Dto submitPaper(Integer pid,Student student,String questionAndAnswer){
         Integer scores = 0;
-        String[] taas = questionAndanswer.split(";");
+        String[] taas = questionAndAnswer.split(";");
         for(String t : taas){
             String[] taa = t.split("_");
             if(StringUtils.isNoneBlank(taa[0], taa[1])){

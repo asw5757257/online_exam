@@ -3,6 +3,7 @@ package com.zyw.online_exam.graduation_design.service;
 import com.zyw.online_exam.graduation_design.dao.*;
 import com.zyw.online_exam.graduation_design.pojo.*;
 import com.zyw.online_exam.graduation_design.utils.Md5Util;
+import com.zyw.online_exam.graduation_design.vo.ScoreVo;
 import org.apache.commons.lang3.StringUtils;
 import com.zyw.online_exam.graduation_design.Dto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,32 +67,23 @@ public class TeacherService {
 
     }
     //获取教师管理的专业
-    public Dto getTeacherMajor(){
-        List<StudentScore> list = new ArrayList<>();
-        List<Student> studentList = studentDao.findAll();
-        List<Paper> paperList = paperDao.findAll();
-        List<Score> scoreList = scoreDao.findAll();
-        Map<Score,String> map = new HashMap<>();
-        StudentScore studentScore;
-        for(Score score:scoreList){
-            for(Student student:studentList){
-                if(student.getId().equals(score.getStudentId())){
-                    map.put(score,student.getName());
+    public Dto getTeacherMajor(Teacher teacher){
+        List<TeacherAndMajor> majorIdList = teacherAndMajorDao.findAllByTeacherId(teacher.getId());
+        List<Major> list = majorDao.findAll();
+        List<Major> result = new ArrayList<>();
+        for(TeacherAndMajor teacherAndMajor:majorIdList){
+            for(Major major:list){
+                if(major.getId().equals(teacherAndMajor.getMajorId())){
+                    result.add(major);
+                    break;
                 }
             }
         }
-        for(Score key : map.keySet()){
-            for(Paper paper:paperList){
-                if(key.getPaperId().equals(paper.getId())){
-                    studentScore = new StudentScore(map.get(key),key.getStudentId(),Integer.valueOf(key.getScore()),paper.getName());
-                    list.add(studentScore);
-                }
-            }
-        }
+        return Dto.getSuccess(result);
+    }
+    //获取成绩
+    public Dto getStuScore(){
+        List<ScoreDetail> list = scoreDao.findAllScore();
         return Dto.getSuccess(list);
-
-
-
-
     }
 }

@@ -25,6 +25,8 @@ public interface QuestionDao extends JpaRepository<Question,Integer> {
 
     Question findAllByIdAndAnswer(Integer id,String answer);
 
+    Page<Question> findAllByCreatedBy(Pageable pageable,Integer id);
+
 
 
 }

@@ -31,8 +31,7 @@ public class QuestionTest extends GraduationDesignApplicationTests{
     }
     @Test
     public void test2() throws MyException {
-        QuestionVo questionVo = questionService.getById(1);
-        System.out.println(questionVo);
+
 
     }
     @Test
@@ -48,7 +47,10 @@ public class QuestionTest extends GraduationDesignApplicationTests{
     }
     @Test
     public void test5(){
-
+        List<QuestionVo> list = questionService.getMyQuestion(1,0,9);
+        for(QuestionVo questionVo:list){
+            System.out.println(questionVo);
+        }
 
     }
     @Test

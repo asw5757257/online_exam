@@ -24,5 +24,6 @@ public interface MajorDao extends JpaRepository<Major,Integer> {
     int deleteAllById(Integer id);
     List<Major> findAllByGrade(String grade);
     Page<Major> findAllById(Pageable p,Integer id);
+    Page<Major> findAllByNameLikeAndGradeLike(Pageable pageable,String name,String grade);
 
 }

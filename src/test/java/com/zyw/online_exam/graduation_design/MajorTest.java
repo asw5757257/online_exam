@@ -29,8 +29,7 @@ public class MajorTest extends GraduationDesignApplicationTests {
     private QuestionService questionService;
     @Test
     public void test1(){
-        Dto dto = teacherService.getTeacherMajor();
-        System.out.println(dto);
+
 
     }
     @Test

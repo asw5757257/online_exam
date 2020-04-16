@@ -315,6 +315,13 @@ public class ManagerService {
         return Dto.getFailed("删除失败");
 
     }
+    //获取专业
+    public Dto queryMajor(Major major,int start,int size){
+        Pageable pageable = PageRequest.of(start,size);
+        Page<Major> page = majorDao.findAllByNameLikeAndGradeLike(pageable,"%"+major.getName()+"%","%"+major.getGrade()+"%");
+        List<Major> list = page.getContent();
+        return Dto.getSuccess(list);
+    }
     //重置教师密码
     public Dto resetTeacherPwd(Integer tid){
         if(tid == null){
@@ -323,7 +330,7 @@ public class ManagerService {
         String password = Md5Util.md5EncodeUtf8("123456");
         Teacher teacher = teacherDao.findAllById(tid);
         if(teacher == null){
-            return Dto.getFailed("没有改名教师");
+            return Dto.getFailed("没有该名教师");
         }
         teacher.setPassword(password);
         teacher = teacherDao.save(teacher);
@@ -340,7 +347,7 @@ public class ManagerService {
         String password = Md5Util.md5EncodeUtf8("123456");
         Student student = studentDao.findAllById(sid);
         if(student == null){
-            return Dto.getFailed("没有改名学生");
+            return Dto.getFailed("没有该名学生");
         }
         student.setPassword(password);
         student = studentDao.save(student);
