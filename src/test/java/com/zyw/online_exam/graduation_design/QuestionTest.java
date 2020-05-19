@@ -6,6 +6,7 @@ import com.zyw.online_exam.graduation_design.pojo.Major;
 import com.zyw.online_exam.graduation_design.pojo.Question;
 import com.zyw.online_exam.graduation_design.pojo.Student;
 import com.zyw.online_exam.graduation_design.service.QuestionService;
+import com.zyw.online_exam.graduation_design.utils.Md5Util;
 import com.zyw.online_exam.graduation_design.vo.QuestionVo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +25,12 @@ public class QuestionTest extends GraduationDesignApplicationTests{
     private MajorDao majorDao;
     @Test
     public void test1() throws MyException {
-        List<QuestionVo> list = questionService.getAll(0,8);
-        for(QuestionVo question :list){
-            System.out.println(question);
-        }
+
     }
     @Test
     public void test2() throws MyException {
 
-
+        System.out.println(Md5Util.md5EncodeUtf8("123456"));
     }
     @Test
     public void test4()  {

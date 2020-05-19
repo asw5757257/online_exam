@@ -22,4 +22,6 @@ public class ScoreVo {
     private String paperName;
 
     private String score;
+
+    private String finishTime;
 }

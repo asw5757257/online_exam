@@ -2,6 +2,7 @@ package com.zyw.online_exam.graduation_design.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -34,7 +35,8 @@ public class Score {
     private String score;
 
     private String flag;
-
+    @CreatedDate
+    @Column(name = "finishTime",updatable = false,nullable = false)
     private Date finishTime;
 
 

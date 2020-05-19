@@ -8,6 +8,7 @@ import com.zyw.online_exam.graduation_design.pojo.Teacher;
 import com.zyw.online_exam.graduation_design.service.MajorService;
 import com.zyw.online_exam.graduation_design.service.QuestionService;
 import com.zyw.online_exam.graduation_design.service.TeacherService;
+import com.zyw.online_exam.graduation_design.utils.Md5Util;
 import com.zyw.online_exam.graduation_design.vo.QuestionVo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,7 @@ public class MajorTest extends GraduationDesignApplicationTests {
     }
     @Test
     public void test4(){
-        Dto questionList = questionService.getSubject();
-        System.out.println(questionList);
+        System.out.println(Md5Util.md5EncodeUtf8("123"));
 
 
     }

@@ -1,6 +1,8 @@
 package com.zyw.online_exam.graduation_design;
 
+import com.zyw.online_exam.graduation_design.dao.ManagerDao;
 import com.zyw.online_exam.graduation_design.dao.ScoreDao;
+import com.zyw.online_exam.graduation_design.dao.TeacherDao;
 import com.zyw.online_exam.graduation_design.pojo.Major;
 import com.zyw.online_exam.graduation_design.pojo.Manager;
 import com.zyw.online_exam.graduation_design.pojo.ScoreDetail;
@@ -9,6 +11,9 @@ import com.zyw.online_exam.graduation_design.service.ManagerService;
 import com.zyw.online_exam.graduation_design.service.TeacherService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -25,12 +30,13 @@ public class TeacherTest extends GraduationDesignApplicationTests{
     private TeacherService teacherService;
     @Autowired
     private ScoreDao scoreDao;
+    @Autowired
+    private TeacherDao teacherDao;
     @Test
     public void test1(){
-        Teacher teacher = new Teacher();
-        teacher.setName("zs");
-        Dto dto = managerService.queryTeacher(teacher,0,5);
-        System.out.println(dto);
+
+
+
     }
     @Test
     public void test2(){
@@ -90,6 +96,10 @@ public class TeacherTest extends GraduationDesignApplicationTests{
         for(ScoreDetail scoreDetail:list){
             System.out.println(scoreDetail);
         }
+    }
+    @Test
+    public void test8(){
+        System.out.println(teacherDao.countAllBy());
     }
 
 }

@@ -2,11 +2,9 @@ package com.zyw.online_exam.graduation_design;
 
 import com.zyw.online_exam.graduation_design.dao.PaperQuestionDao;
 import com.zyw.online_exam.graduation_design.dao.QuestionDao;
+import com.zyw.online_exam.graduation_design.dao.ScoreDao;
 import com.zyw.online_exam.graduation_design.exception.MyException;
-import com.zyw.online_exam.graduation_design.pojo.Paper;
-import com.zyw.online_exam.graduation_design.pojo.PaperQuestion;
-import com.zyw.online_exam.graduation_design.pojo.Question;
-import com.zyw.online_exam.graduation_design.pojo.Teacher;
+import com.zyw.online_exam.graduation_design.pojo.*;
 import com.zyw.online_exam.graduation_design.service.PaperService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +24,11 @@ public class PaperTest extends GraduationDesignApplicationTests{
     private PaperQuestionDao paperQuestionDao;
     @Autowired
     private QuestionDao questionDao;
+    @Autowired
+    ScoreDao scoreDao;
     @Test
     public void test1() throws MyException {
-        /*String name = "新增试卷";
-        String flag = "Y";
-        Teacher teacher = new Teacher();
-        teacher.setId(1);
-        paperService.addPaper(name,flag,teacher);*/
-        Dto dto = paperService.queryPaper(0,2);
-        System.out.println(dto);
+
 
     }
     @Test

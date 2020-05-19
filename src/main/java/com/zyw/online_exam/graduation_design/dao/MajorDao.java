@@ -16,10 +16,11 @@ import java.util.List;
 public interface MajorDao extends JpaRepository<Major,Integer> {
     Major findAllByName(String name);
 
-    Page<Major> findAll(Pageable pageable);
+    Page<Major> findAllByNameLike(Pageable pageable,String name);
     void deleteByName(String name);
     Major findAllById(Integer id);
     Major save(Major major);
+    int countAllByNameLike(String name);
     Major findAllByNameAndGrade(String name,String grade);
     int deleteAllById(Integer id);
     List<Major> findAllByGrade(String grade);

@@ -31,7 +31,8 @@ public class PaperController {
     @RequestMapping("/queryPaper")
     public Dto queryPaper(HttpServletRequest request,
                           @RequestParam(value = "start")int start,
-                          @RequestParam(value = "size")int size){
+                          @RequestParam(value = "size")int size,
+                          @RequestParam(value = "query")String query){
         String token = CookieUtil.readCookie(request);
         if (StringUtils.isEmpty(token)) {
             return Dto.getFailed("请先登录");
@@ -42,7 +43,7 @@ public class PaperController {
             return  Dto.getFailed("请先登录");
         }
         if(Constant.Role.ROLE_TEACHER.equals(teacher.getRole())){
-            return paperService.queryPaper(start,size);
+            return paperService.queryPaper(start,size,query);
         }
         return Dto.getFailed("不是教师,无法操作");
     }
@@ -141,7 +142,7 @@ public class PaperController {
     }
     //删除试题
     @RequestMapping("/deleteQuestion")
-    public Dto deleteQuestion(@RequestParam(value = "tid")int tid,
+    public Dto deleteQuestion(@RequestParam(value = "qid")int qid,
                               @RequestParam(value = "pid")int pid,
                               HttpServletRequest request){
         String token = CookieUtil.readCookie(request);
@@ -154,7 +155,7 @@ public class PaperController {
             return  Dto.getFailed("请先登录");
         }
         if(Constant.Role.ROLE_TEACHER.equals(teacher.getRole())){
-            return paperService.deleteQuestionFromPaper(pid,tid,teacher);
+            return paperService.deleteQuestionFromPaper(pid,qid,teacher);
         }
         return Dto.getFailed("不是教师,无法操作");
     }

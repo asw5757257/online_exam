@@ -16,5 +16,7 @@ public interface NoticeDao extends JpaRepository<Notice,Integer> {
     Notice findAllById(Integer id);
     List<Notice> findAllByFlag(String flag);
     Page<Notice> findAllByNoticeContentLikeAndFlag(Pageable pageable,String content, String flag);
+    Page<Notice> findAll(Pageable pageable);
+    int countAllByFlag(String flag);
 
 }

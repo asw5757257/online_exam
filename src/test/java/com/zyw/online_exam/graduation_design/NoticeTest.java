@@ -19,14 +19,7 @@ public class NoticeTest extends GraduationDesignApplicationTests {
     NoticeDao noticeDao;
     @Test
     public void test1(){
-        Notice notice = new Notice();
-        notice.setId(7);
-        notice.setNoticeContent("通知修改");
-        notice.setFlag("Y");
-        Manager manager = new Manager();
-        manager.setId(1);
-        Dto dto = noticeService.addOrModifyNotice(notice,manager);
-        System.out.println(dto);
+
 
 
     }

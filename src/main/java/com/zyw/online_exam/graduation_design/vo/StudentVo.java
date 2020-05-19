@@ -29,6 +29,12 @@ public class StudentVo {
 
     private String grade;
 
+    private String email;
+
+    private String tel;
+
+    private String sex;
+
     private Date createdTime;
 
     private Date lastUpdatedTime;

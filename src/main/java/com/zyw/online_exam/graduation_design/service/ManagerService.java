@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -54,17 +55,32 @@ public class ManagerService {
         return Dto.getSuccess("登陆成功",manager);
     }
     //查询教师
-    public Dto queryTeacher(Teacher teacher,int start,int size){
-        Pageable pageable = PageRequest.of(start,size);
-        Page<Teacher> page = teacherDao.findAllByUsernameOrNameOrTel(pageable,teacher.getUsername(),teacher.getName(),teacher.getTel());
+    public Dto queryTeacher(String  query,int start,int size){
+        Pageable pageable = PageRequest.of(start-1,size);
+        Page<Teacher> page = teacherDao.findAllByNameLike(pageable,"%"+query+"%");
         List<Teacher> list = page.getContent();
+        int total = teacherDao.countAllByNameLike("%"+query+"%");
         if(list.size() == 0){
             return Dto.getFailed("没有查询结果");
         }
         for(Teacher tea : list){
             tea.setPassword(StringUtils.EMPTY);
         }
-        return Dto.getSuccess("查询成功",list);
+        return Dto.getSuccess("查询成功",list,total);
+    }
+    public Dto getTeacher(int start,int size){
+        Pageable pageable = PageRequest.of(start-1,size);
+        Page<Teacher> page = teacherDao.findAll(pageable);
+        List<Teacher> list = page.getContent();
+        int total = teacherDao.countAllBy();
+        if(list.size() == 0){
+            return Dto.getFailed("没有查询结果");
+        }
+        for(Teacher tea : list){
+            tea.setPassword(StringUtils.EMPTY);
+        }
+
+        return Dto.getSuccess("查询成功",list,total);
     }
     //新增或修改教师
     public Dto addOrModifyTeacher(Teacher teacher,Manager manager){
@@ -78,15 +94,8 @@ public class ManagerService {
                         return Dto.getFailed("用户名已经存在");
                     }
                 }
-                tea.setUsername(teacher.getUsername());
-                tea.setPassword(teacher.getPassword());
-                tea.setName(teacher.getName());
                 tea.setEmail(teacher.getEmail());
                 tea.setTel(teacher.getTel());
-                tea.setRole(teacher.getRole());
-                tea.setMark(teacher.getMark());
-                tea.setLastUpdatedBy(teacher.getId());
-                tea.setSex(teacher.getSex());
                 tea = teacherDao.save(tea);
                 if(tea != null){
                     return Dto.getSuccess("修改成功");
@@ -144,8 +153,11 @@ public class ManagerService {
                 if(s!=null){
                     Dto.getFailed("用户名已经存在");
                 }
-                student = studentDao.save(student);
-                if(student!=null){
+                Student result = studentDao.findAllById(student.getId());
+                result.setEmail(student.getEmail());
+                result.setTel(student.getTel());
+                result = studentDao.save(result);
+                if(result!=null){
                     return Dto.getSuccess("修改成功");
                 }
                 return Dto.getFailed("修改失败");
@@ -179,6 +191,47 @@ public class ManagerService {
         }
         return Dto.getFailed("学生不存在");
     }
+    //查询学生
+    public Dto queryStudent(String query,int start,int size){
+        Pageable pageable = PageRequest.of(start-1,size);
+        Page<Student> page = studentDao.findAllByNameLike(pageable,"%"+query+"%");
+        List<Student> list = page.getContent();
+        List<StudentVo> studentVos = new ArrayList<>();
+        for(Student stu:list){
+            StudentVo studentVo = new StudentVo();
+            studentVo = setStudentVO(stu);
+            studentVos.add(studentVo);
+        }
+        int total = studentDao.countAllByNameLike("%"+query+"%");
+        if(list.size() == 0){
+            return Dto.getFailed("没有查询结果");
+        }
+        for(Student stu : list){
+            stu.setPassword(StringUtils.EMPTY);
+        }
+        return Dto.getSuccess("查询成功",studentVos,total);
+    }
+    public Dto getStudent(int start,int size){
+        Pageable pageable = PageRequest.of(start-1,size);
+        Page<Student> page = studentDao.findAll(pageable);
+        List<Student> list = page.getContent();
+        List<StudentVo> studentVos = new ArrayList<>();
+        for(Student stu:list){
+            StudentVo studentVo = new StudentVo();
+            studentVo = setStudentVO(stu);
+            studentVos.add(studentVo);
+        }
+        int total = studentDao.countAllBy();
+        if(list.size() == 0){
+            return Dto.getFailed("没有查询结果");
+        }
+        for(Student stu : list){
+            stu.setPassword(StringUtils.EMPTY);
+        }
+
+        return Dto.getSuccess("查询成功",studentVos,total);
+    }
+
     private StudentVo setStudentVO(Student student) {
         StudentVo studentVO = new StudentVo();
         studentVO.setId(student.getId());
@@ -190,6 +243,9 @@ public class ManagerService {
             studentVO.setMajor(major.getName());
             studentVO.setGrade(major.getGrade());
         }
+        studentVO.setEmail(student.getEmail());
+        studentVO.setTel(student.getTel());
+        studentVO.setSex(student.getSex());
         studentVO.setMajorId(String.valueOf(student.getMajorId()));
         studentVO.setCreatedTime(student.getCreateTime());
         studentVO.setLastUpdatedTime(student.getUpdateTime());
@@ -243,7 +299,7 @@ public class ManagerService {
         }
         TeacherAndMajor teacherAndMajor = teacherAndMajorDao.findAllByTeacherIdAndMajorId(tid,mid);
         if(teacherAndMajor != null){
-            return Dto.getSuccess("操作失败:该教师和该专业已经关联");
+            return Dto.getFailed("操作失败:该教师和该专业已经关联");
         }
         TeacherAndMajor TAM = new TeacherAndMajor();
         TAM.setTeacherId(tid);
@@ -257,6 +313,7 @@ public class ManagerService {
         return Dto.getFailed("关联失败");
     }
     //删除教师关联专业
+    @Transactional
     public Dto delTeacherAndMajor(Integer tid,Integer mid){
         if(tid == null || mid == null){
             return Dto.getFailed("请选择年纪和专业");
@@ -303,7 +360,7 @@ public class ManagerService {
         return Dto.getFailed("参数不正确");
     }
     //删除年纪专业信息
-
+    @Transactional
     public Dto delMajor(Integer mid){
         if(mid == null){
             return Dto.getFailed("参数错误");
@@ -316,11 +373,12 @@ public class ManagerService {
 
     }
     //获取专业
-    public Dto queryMajor(Major major,int start,int size){
-        Pageable pageable = PageRequest.of(start,size);
-        Page<Major> page = majorDao.findAllByNameLikeAndGradeLike(pageable,"%"+major.getName()+"%","%"+major.getGrade()+"%");
+    public Dto queryMajor(String query,int start,int size){
+        Pageable pageable = PageRequest.of(start-1,size);
+        Page<Major> page = majorDao.findAllByNameLike(pageable,"%"+query+"%");
         List<Major> list = page.getContent();
-        return Dto.getSuccess(list);
+        int total = majorDao.countAllByNameLike("%"+query+"%");
+        return Dto.getSuccess("查询成功",list,total);
     }
     //重置教师密码
     public Dto resetTeacherPwd(Integer tid){
@@ -356,19 +414,7 @@ public class ManagerService {
         }
         return Dto.getFailed("重置密码失败");
     }
-    //查询学生
-    public Dto queryStudent(Student student,int start,int size){
-        Pageable pageable = PageRequest.of(start,size);
-        Page<Student> page = studentDao.findAllByNameOrUsernameOrStuNumOrMajorId(pageable,student.getName(),student.getUsername(),student.getStuNum(),student.getMajorId());
-        List<Student> list = page.getContent();
-        if(list.size() == 0){
-            return Dto.getFailed("没有查询结果");
-        }
-        for(Student stu : list){
-            stu.setPassword(StringUtils.EMPTY);
-        }
-        return Dto.getSuccess("查询成功",list);
-    }
+
     //获取年级
     public Dto getGrade(){
         List<Major> gradeList = majorDao.findAll();
@@ -379,17 +425,22 @@ public class ManagerService {
         return Dto.getSuccess(list);
     }
     //获取指定年级的专业
-    public Dto getMajor(String grade){
+    public Dto getMajorByGrade(String grade){
         List<Major> list = majorDao.findAllByGrade(grade);
+        return Dto.getSuccess(list);
+    }
+    public Dto getMajor(){
+        List<Major> list = majorDao.findAll();
         return Dto.getSuccess(list);
     }
     //获取教师关联的专业信息
     public Dto getTeacherAndMajor(Integer tid,int start,int size){
-        Pageable pageable = PageRequest.of(start,size);
+        Pageable pageable = PageRequest.of(start-1,size);
         Page<TeacherAndMajor> list = teacherAndMajorDao.findAllByTeacherId(pageable,tid);
         List<TeacherAndMajor> teacherAndMajorList = list.getContent();
         List<Major> majorList = majorDao.findAll();
         List<Major> result = new ArrayList<>();
+        int total = teacherDao.countAllBy();
         for(TeacherAndMajor teacherAndMajor:teacherAndMajorList){
             for(Major major:majorList){
                 if(major.getId().equals(teacherAndMajor.getMajorId())){
@@ -397,7 +448,7 @@ public class ManagerService {
                 }
             }
         }
-        return Dto.getSuccess(result);
+        return Dto.getSuccess("获取成功",result,total);
     }
 
 }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 
 /**
  * @author cengyunwen
@@ -40,8 +41,9 @@ public class ManagerController {
                      @RequestParam(value = "password")String password,
                      HttpSession session, HttpServletResponse response){
         Dto dto = managerService.login(username,password);
+        Manager manager = (Manager)dto.getObject();
         if(dto.getState().equals(1)){
-            CookieUtil.writeCookie(response,session.getId());
+            CookieUtil.writeCookie(response,session.getId(),manager.getRole());
             RedisPoolUtil.setEx(session.getId(), JacksonUtil.objToString(dto.getObject()), 60 * 30);
         }
         return dto;
@@ -49,9 +51,9 @@ public class ManagerController {
     //获取教师信息
     @RequestMapping("/queryTeacher")
     public Dto queryTeacher(HttpServletRequest request,
-                            @RequestParam(value = "start",defaultValue = "0")int start,
+                            @RequestParam(value = "start",defaultValue = "1")int start,
                             @RequestParam(value = "size",defaultValue = "5")int size,
-                            @RequestBody Teacher teacher){
+                            @RequestParam (value = "query")String  query){
         String token = CookieUtil.readCookie(request);
         if (StringUtils.isEmpty(token)) {
             return Dto.getFailed("请先登录");
@@ -63,10 +65,32 @@ public class ManagerController {
         }
         //判断权限，业务处理
         if (Constant.Role.ROLE_ADMIN.equals(manager.getRole())) {
-            return managerService.queryTeacher(teacher,start,size);
+            if(query.equals("")){
+                return managerService.getTeacher(start,size);
+            }
+            return managerService.queryTeacher(query,start,size);
         }
         return Dto.getFailed("不是管理员,无法操作");
     }
+    /*@RequestMapping("/getTeacher")
+    public Dto getTeacher(HttpServletRequest request,
+                          @RequestParam(value = "start",defaultValue = "0")int start,
+                          @RequestParam(value = "size",defaultValue = "5")int size){
+        String token = CookieUtil.readCookie(request);
+        if (StringUtils.isEmpty(token)) {
+            return Dto.getFailed("请先登录");
+        }
+        String manageStr = RedisPoolUtil.get(token);
+        Manager manager = JacksonUtil.stringToObj(manageStr, Manager.class);
+        if (manager == null) {
+            return Dto.getFailed("请先登录");
+        }
+        //判断权限，业务处理
+        if (Constant.Role.ROLE_ADMIN.equals(manager.getRole())) {
+            return managerService.getTeacher(start,size);
+        }
+        return Dto.getFailed("不是管理员,无法操作");
+    }*/
     //新增或修改教师
     @RequestMapping("/addOrModifyTeacher")
     public Dto addOrModifyTeacher(HttpServletRequest request,
@@ -106,6 +130,7 @@ public class ManagerController {
         return Dto.getFailed("不是管理员,无法操作");
     }
     //删除教师
+    @Transactional
     @RequestMapping("/delTeacher")
     public Dto delTeacher(HttpServletRequest request,
                           @RequestParam(value = "id")int id){
@@ -127,9 +152,9 @@ public class ManagerController {
     //查询学生
     @RequestMapping("/queryStudent")
     public Dto queryStudent(HttpServletRequest request,
-                            @RequestParam(value = "start",defaultValue = "0")int start,
+                            @RequestParam(value = "start",defaultValue = "1")int start,
                             @RequestParam(value = "size",defaultValue = "5")int size,
-                            @RequestBody Student student){
+                            @RequestParam (value = "query")String  query){
         String token = CookieUtil.readCookie(request);
         if (StringUtils.isEmpty(token)) {
             return Dto.getFailed("请先登录");
@@ -141,7 +166,10 @@ public class ManagerController {
         }
         //判断权限，业务处理
         if (Constant.Role.ROLE_ADMIN.equals(manager.getRole())) {
-            return managerService.queryStudent(student,start,size);
+            if(query.equals("")){
+                return managerService.getStudent(start,size);
+            }
+            return managerService.queryStudent(query,start,size);
         }
         return Dto.getFailed("不是管理员,无法操作");
     }
@@ -183,6 +211,7 @@ public class ManagerController {
         return Dto.getFailed("不是管理员,无法操作");
     }
     //删除学生
+    @Transactional
     @RequestMapping("/delStudent")
     public Dto delStudent(HttpServletRequest request,
                           @RequestParam(value = "id")int id){
@@ -282,8 +311,8 @@ public class ManagerController {
         return Dto.getFailed("不是管理员,无法操作");
     }
     //获取指定年级的专业
-    @RequestMapping("/getMajor")
-    public Dto getMajor(HttpServletRequest request,
+    @RequestMapping("/getMajorByGrade")
+    public Dto getMajorByGrade(HttpServletRequest request,
                         @RequestParam(value = "grade")String grade){
         String token = CookieUtil.readCookie(request);
         if (StringUtils.isEmpty(token)) {
@@ -296,7 +325,24 @@ public class ManagerController {
         }
         //判断权限，业务处理
         if (Constant.Role.ROLE_ADMIN.equals(manager.getRole())) {
-            return managerService.getMajor(grade);
+            return managerService.getMajorByGrade(grade);
+        }
+        return Dto.getFailed("不是管理员,无法操作");
+    }
+    @RequestMapping("/getMajor")
+    public Dto getMajor(HttpServletRequest request){
+        String token = CookieUtil.readCookie(request);
+        if (StringUtils.isEmpty(token)) {
+            return Dto.getFailed("请先登录");
+        }
+        String manageStr = RedisPoolUtil.get(token);
+        Manager manager = JacksonUtil.stringToObj(manageStr, Manager.class);
+        if (manager == null) {
+            return Dto.getFailed("请先登录");
+        }
+        //判断权限，业务处理
+        if (Constant.Role.ROLE_ADMIN.equals(manager.getRole())) {
+            return managerService.getMajor();
         }
         return Dto.getFailed("不是管理员,无法操作");
     }
@@ -326,7 +372,7 @@ public class ManagerController {
     public Dto queryMajor(HttpServletRequest request,
                           @RequestParam(value = "start")int start,
                           @RequestParam(value = "size")int size,
-                          @RequestBody Major major){
+                          @RequestParam(value = "query")String query){
         String token = CookieUtil.readCookie(request);
         if (StringUtils.isEmpty(token)) {
             return Dto.getFailed("请先登录");
@@ -338,7 +384,7 @@ public class ManagerController {
         }
         //判断权限，业务处理
         if (Constant.Role.ROLE_ADMIN.equals(manager.getRole())) {
-            return managerService.queryMajor(major,start,size);
+            return managerService.queryMajor(query,start,size);
         }
         return Dto.getFailed("不是管理员,无法操作");
     }
@@ -361,7 +407,7 @@ public class ManagerController {
         }
         return Dto.getFailed("不是管理员,无法操作");
     }
-    //新增或修改年级信息
+    //新增或修改专业信息
     @RequestMapping("addOrModifyMajor")
     public Dto addOrModifyMajor(HttpServletRequest request,
                                 @RequestBody Major major){
@@ -380,7 +426,7 @@ public class ManagerController {
         }
         return Dto.getFailed("不是管理员,无法操作");
     }
-    //删除年级信息
+    //删除专业信息
     @RequestMapping("/delMajor")
     public Dto delMajor(HttpServletRequest request,
                         @RequestParam(value = "id")int id){

@@ -14,4 +14,6 @@ public interface ManagerDao extends JpaRepository<Manager,Integer> {
     Manager findAllByUsername(String username);
 
     Manager findAllByUsernameAndPassword(String username,String password);
+
+    int countAllBy();
 }

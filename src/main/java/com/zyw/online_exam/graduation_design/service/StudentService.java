@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +58,27 @@ public class StudentService {
         student.setPassword(StringUtils.EMPTY);
         return Dto.getSuccess("登陆成功",student);
     }
-    //未登录时手机验证码登录和重置密码
-    //todo
+    //未登录时邮箱验证码登录时查询邮箱是否存在
+    public Dto checkMail(String email){
+        Student stu;
+        stu = studentDao.findAllByEmail(email);
+        if(stu == null){
+            return Dto.getFailed("该邮箱不存在用户");
+        }
+        return Dto.getSuccess();
+    }
+    //未登录重置密码
+    public Dto resetPassword(String email,String passwordNew){
+        Student stu;
+        stu = studentDao.findAllByEmail(email);
+        stu.setPassword(Md5Util.md5EncodeUtf8(passwordNew));
+        stu.setLastUpdatedBy(stu.getId());
+        stu = studentDao.save(stu);
+        if(stu!=null){
+            return Dto.getSuccess("密码更新成功");
+        }
+        return Dto.getSuccess("密码更新失败");
+    }
     //登陆过后修改密码
     public Dto resetStudentPassword(String newPwd, String oldPwd, Student student){
         Student stu;
@@ -83,9 +103,26 @@ public class StudentService {
             studentVo.setMajor(major.getName());
             studentVo.setGrade(major.getGrade());
         }
+        studentVo.setEmail(student.getEmail());
+        studentVo.setTel(student.getTel());
+        studentVo.setSex(student.getSex());
         studentVo.setCreatedTime(student.getCreateTime());
         studentVo.setLastUpdatedTime(student.getUpdateTime());
         return studentVo;
+    }
+    //查询全部试卷
+    public Dto getAllPapers(Student student){
+        List<PaperAndMajor> paperAndMajorList = paperAndMajorDao.findAllByMajorId(student.getMajorId());
+        List<StudentPaperVo> list = new ArrayList<>();
+        for(PaperAndMajor paperAndMajor:paperAndMajorList){
+            StudentPaperVo studentPaperVo = new StudentPaperVo();
+            studentPaperVo.setPaperId(paperAndMajor.getPaperId());
+            studentPaperVo.setPublicTime(TimeUtil.dateToStr(paperAndMajor.getPublishTime()));
+            Paper paper = paperDao.findAllById(paperAndMajor.getPaperId());
+            studentPaperVo.setPaperName(paper.getName());
+            list.add(studentPaperVo);
+        }
+        return Dto.getSuccess(list);
     }
     //查询待完成的试卷
     public Dto getUnfinishedPaper(Student student){
@@ -95,8 +132,8 @@ public class StudentService {
         }*/
         List<StudentPaperVo> list = new ArrayList<>();
         for(PaperAndMajor paperAndMajor:paperAndMajorList){
-            Score score = scoreDao.findAllByStudentIdAndPaperId(student.getId(),paperAndMajor.getPaperId());
-            if(score != null){
+            List<Score> score = scoreDao.findByStudentIdAndPaperId(student.getId(),paperAndMajor.getPaperId());
+            if(score.size()>0){
                 //System.out.println(score);
                 continue;
             }
@@ -165,8 +202,9 @@ public class StudentService {
             String[] taa = t.split("_");
             if(StringUtils.isNoneBlank(taa[0], taa[1])){
                 Question question = questionDao.findAllByIdAndAnswer(Integer.parseInt(taa[0]),taa[1]);
+                PaperQuestion paperQuestion = paperQuestionDao.findAllByPaperIdAndQuestionId(pid,Integer.parseInt(taa[0]));
                 if(question!=null){
-                    scores += Integer.valueOf(taa[2]);
+                    scores += Integer.parseInt(paperQuestion.getScore());
                 }
             }else{
                 return Dto.getFailed("非法请求！！！");
@@ -184,15 +222,34 @@ public class StudentService {
             return Dto.getFailed("交卷失败");
         }
     }
+    //获取本次考试的成绩
+    public Dto getThisScore(Integer pid,Student student,String questionAndAnswer){
+        String[] taas = questionAndAnswer.split(";");
+        StringBuffer answer = new StringBuffer();
+        for(String t : taas){
+            String[] taa = t.split("_");
+            if(StringUtils.isNoneBlank(taa[0], taa[1])){
+                Question question = questionDao.findAllById(Integer.parseInt(taa[0]));
+                if(question == null){
+                    return Dto.getFailed("获取交卷详情失败");
+                }
+                answer.append(taa[0]).append("_").append(question.getAnswer()).append(";");
+            }
+        }
+        answer.deleteCharAt(answer.length()-1);
+        return Dto.getSuccess(answer);
+    }
     //查询成绩
     public Dto queryScore(Student student){
         List<Score> scoreList = scoreDao.findAllByStudentId(student.getId());
         List<ScoreVo> scoreVos = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for(Score score : scoreList){
             ScoreVo scoreVo = new ScoreVo();
             Student stu = studentDao.findAllById(student.getId());
             scoreVo.setStudentName(stu.getName());
             scoreVo.setStudentId(stu.getStuNum());
+            scoreVo.setFinishTime(sdf.format(score.getFinishTime()));
             Major major = majorDao.findAllById(stu.getMajorId());
             scoreVo.setMajor(major.getGrade()+" "+major.getName());
             Paper paper = paperDao.findAllById(score.getPaperId());
@@ -200,6 +257,13 @@ public class StudentService {
             scoreVo.setScore(score.getScore());
             scoreVos.add(scoreVo);
         }
-        return Dto.getSuccess(scoreVos);
+        int count = scoreDao.countAllByStudentId(student.getId());
+        return Dto.getSuccess("查询成功",scoreVos,count);
+    }
+    //查询成绩
+    public Dto queryThisScore(Student student,Integer pid){
+        List<Score> list = scoreDao.findByStudentIdAndPaperId(student.getId(),pid);
+        String score = list.get(list.size()-1).getScore();
+        return Dto.getSuccess(score);
     }
 }

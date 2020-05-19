@@ -51,8 +51,28 @@ public class TeacherService {
         teacher.setPassword(StringUtils.EMPTY);
         return Dto.getSuccess("登陆成功",teacher);
     }
-    //未登录时手机验证码登录和重置密码
-    //todo
+
+    //未登录时邮箱验证码登录时查询邮箱是否存在
+    public Dto checkMail(String email){
+        Teacher tea;
+        tea = teacherDao.findAllByEmail(email);
+        if(tea == null){
+            return Dto.getFailed("该邮箱不存在用户");
+        }
+        return Dto.getSuccess();
+    }
+    //未登录重置密码
+    public Dto resetPassword(String email,String passwordNew){
+        Teacher tea;
+        tea = teacherDao.findAllByEmail(email);
+        tea.setPassword(Md5Util.md5EncodeUtf8(passwordNew));
+        tea.setLastUpdatedBy(tea.getId());
+        tea = teacherDao.save(tea);
+        if(tea!=null){
+            return Dto.getSuccess("密码更新成功");
+        }
+        return Dto.getSuccess("密码更新失败");
+    }
     //登陆过后修改密码
     public Dto resetTeacherPassword(String newPwd,String oldPwd,Teacher teacher){
         Teacher tea;

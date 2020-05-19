@@ -24,9 +24,9 @@ public interface QuestionDao extends JpaRepository<Question,Integer> {
     List<Question> randomFind(String type,String subject,Integer optionNum);
 
     Question findAllByIdAndAnswer(Integer id,String answer);
-
+    int countAllByTitleLike(String name);
     Page<Question> findAllByCreatedBy(Pageable pageable,Integer id);
-
+    Page<Question> findAllByTitleLike(Pageable pageable,String name);
 
 
 }

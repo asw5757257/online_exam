@@ -33,9 +33,10 @@ public class QuestionService {
     private MajorDao majorDao;
     @Autowired
     private TeacherDao teacherDao;
-    public List<QuestionVo> getAll(int start, int size)throws MyException {
-        Pageable pageable = PageRequest.of(start,size);
-        Page<Question> page = questionDao.findAll(pageable);
+    public Dto getAll(int start, int size,String query) {
+        Pageable pageable = PageRequest.of(start-1,size);
+        Page<Question> page = questionDao.findAllByTitleLike(pageable,"%"+query+"%");
+        int total = questionDao.countAllByTitleLike("%"+query+"%");
         List<Question> lists = page.getContent();
         List<QuestionVo> questionVoList = new ArrayList<>();
         for(Question question:lists){
@@ -43,14 +44,12 @@ public class QuestionService {
             questionVo = setQuestionVo(question);
             //System.out.println(questionVo);
             questionVoList.add(questionVo);
-
         }
         if(lists.size() == 0){
-            throw new MyException("当前页面为空");
+            return Dto.getFailed("试题为空");
 
         }
-
-        return questionVoList;
+        return Dto.getSuccess("查询成功",questionVoList,total);
     }
     public List<QuestionVo> getMyQuestion(Integer tid,int start,int size){
         Pageable pageable = PageRequest.of(start,size);

@@ -2,6 +2,7 @@ package com.zyw.online_exam.graduation_design.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,20 +20,31 @@ public class CookieUtil {
     //cookie名称
     private final static String COOKIE_NAME = "qx";
 
+    private final static String User_Name = "User";
+
     /**
      * @author chs
      * @description 存入Cookie
      * @createtime 2018-07-30 15:22
      */
-    public static void writeCookie(HttpServletResponse response, String value) {
+    public static void writeCookie(HttpServletResponse response, String value,String username) {
         Cookie cookie = new Cookie(COOKIE_NAME, value);
         cookie.setDomain(COOKIE_DOMAIN);
         cookie.setPath("/");
         //防止脚本获取cookie信息
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
         //cookie有效期
         cookie.setMaxAge(60 * 60 * 24 * 365);
         response.addCookie(cookie);
+
+        Cookie userCookie = new Cookie(User_Name,username);
+        userCookie.setDomain(COOKIE_DOMAIN);
+        userCookie.setPath("/");
+        //防止脚本获取cookie信息
+        userCookie.setHttpOnly(false);
+        //cookie有效期
+        userCookie.setMaxAge(60 * 60 * 24 * 365);
+        response.addCookie(userCookie);
     }
 
     /**
@@ -62,6 +74,14 @@ public class CookieUtil {
         if (cookies != null && cookies.length > 0) {
             for (Cookie ck : cookies){
                 if (StringUtils.equals(ck.getName(),COOKIE_NAME)){
+                    ck.setDomain(COOKIE_DOMAIN);
+                    ck.setPath("/");
+                    ck.setHttpOnly(true);
+                    //直接设置Cookie有效期为0，表示删除此Cookie
+                    ck.setMaxAge(0);
+                    response.addCookie(ck);
+                }
+                if (StringUtils.equals(ck.getName(),User_Name)){
                     ck.setDomain(COOKIE_DOMAIN);
                     ck.setPath("/");
                     ck.setHttpOnly(true);

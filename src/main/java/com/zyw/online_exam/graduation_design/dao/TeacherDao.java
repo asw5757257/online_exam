@@ -21,6 +21,9 @@ public interface TeacherDao extends JpaRepository<Teacher,Integer> {
     Teacher findAllById(Integer id);
 
     int deleteAllById(Integer id);
-
-    Page<Teacher> findAllByUsernameOrNameOrTel(Pageable pageable,String username,String name,String tel);
+    Teacher findAllByEmail(String email);
+    Page<Teacher> findAllByNameLike(Pageable pageable,String name);
+    int countAllByNameLike(String name);
+    Page<Teacher> findAll(Pageable pageable);
+    int countAllBy();
 }

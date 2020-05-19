@@ -14,7 +14,8 @@ import javax.servlet.http.HttpSession;
  * @version 1.0
  * @date 2020/4/15 10:31
  */
-@RestController("/user")
+@RestController
+@RequestMapping("/user")
 public class UserController {
     //用户登出
     @RequestMapping("/logout")

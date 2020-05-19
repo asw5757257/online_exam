@@ -43,16 +43,16 @@ public class PaperService {
     private PaperAndMajorDao paperAndMajorDao;
 
     //查询试卷
-    public Dto queryPaper(int start, int size){
-        Pageable pageable = PageRequest.of(start, size);
-        Page<Paper> page = paperDao.findAll(pageable);
+    public Dto queryPaper(int start, int size,String query){
+        Pageable pageable = PageRequest.of(start-1, size);
+        Page<Paper> page = paperDao.findAllByNameLike(pageable,"%"+query+"%");
         List<Paper> lists = page.getContent();
-
+        int total = paperDao.countAllByNameLike("%"+query+"%");
         if (lists.size() == 0) {
             return Dto.getSuccess("当前没有信息");
 
         }
-        return Dto.getSuccess(lists);
+        return Dto.getSuccess("查询成功",lists,total);
     }
 
     //增加试卷
@@ -62,6 +62,7 @@ public class PaperService {
             paper.setName(paperName);
             paper.setIsPublic(publicFlag);
             paper.setIsEdit("Y");
+            paper.setFlag("Y");
             paper.setCreatedBy(teacher.getId());
             paper.setLastUpdatedBy(teacher.getId());
             paperDao.save(paper);
@@ -113,10 +114,13 @@ public class PaperService {
 
     public Dto paperDetail(Integer pid, Teacher teacher) {
         Paper paper = paperDao.findAllById(pid);
+        if(paper == null){
+            return Dto.getFailed("没有该张试卷");
+        }
         String isPublic = paper.getIsPublic();
         if (!FLAG_Y.equals(isPublic)) {
             Integer id = paper.getCreatedBy();
-            if (!teacher.equals(id)) {
+            if (!teacher.getId().equals(id)) {
                 return Dto.getFailed("无权限查看不属于你的未公开试卷");
             }
         }
@@ -145,7 +149,9 @@ public class PaperService {
         }
         paperDetailVo.setScore(String.valueOf(score));
         paperDetailVo.setChoiceQuestion(choiceQuestionVOList);
-        return Dto.getSuccess(paperDetailVo);
+        List<PaperDetailVo> paperDetailVos = new ArrayList<>();
+        paperDetailVos.add(paperDetailVo);
+        return Dto.getSuccess(paperDetailVos);
     }
 
     /**
@@ -155,6 +161,8 @@ public class PaperService {
         ChoiceQuestionVO choiceQuestionVO = new ChoiceQuestionVO();
         Question question = questionDao.findAllById(p.getQuestionId());
         //拼装choiceQuestionVO对象
+        choiceQuestionVO.setType("选择题");
+        choiceQuestionVO.setSubject(question.getSubject());
         choiceQuestionVO.setId(question.getId());
         choiceQuestionVO.setTitle(question.getTitle());
         String[] contents = question.getContent().split(";");
@@ -195,6 +203,7 @@ public class PaperService {
     }
 
     //删除试卷试题
+    @Transactional
     public Dto deleteQuestionFromPaper(Integer pid, Integer qid, Teacher teacher) {
         Paper paper = paperDao.findAllById(pid);
         if (paper.getCreatedBy().equals(teacher.getId())) {
@@ -212,6 +221,7 @@ public class PaperService {
     }
 
     //清空试卷试题
+    @Transactional
     public Dto emptyQuestionFromPaper(Integer pid, Teacher teacher) {
         Paper paper = paperDao.findAllById(pid);
         if (paper.getCreatedBy().equals(teacher.getId())) {
