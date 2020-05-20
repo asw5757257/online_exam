@@ -1,0 +1,50 @@
+{
+    "state":1,
+    "data":[
+      {
+        "menuId": "1",
+        "menuName": "教师管理",
+        "children":[
+            {
+                "menuId":101,
+                "menuName": "教师列表",
+                "path":"teacher",
+                "children":[]
+            },
+            {
+                "menuId":102,
+                "menuName": "教师和专业列表",
+                "path":"teacherAndMajor",
+                "children":[]
+            }
+        ]
+      },
+      {
+        "menuId": "2",
+        "menuName": "学生管理",
+        "children":[
+            {
+                "menuId":201,
+                "menuName": "学生列表",
+                "path":"student",
+                "children":[]
+
+            }
+        ]
+      },
+      {
+        "menuId": "3",
+        "menuName": "专业年级管理",
+        "children":[
+            {
+                "menuId":301,
+                "menuName": "专业列表",
+                "path":"major",
+                "children":[]
+
+            }
+        ]
+      }
+    ],
+    "message":""
+  }

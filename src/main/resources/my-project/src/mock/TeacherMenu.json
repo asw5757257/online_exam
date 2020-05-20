@@ -1,0 +1,44 @@
+{
+    "state":1,
+    "data":[
+      {
+        "menuId": "1",
+        "menuName": "试卷管理",
+        "children":[
+            {
+                "menuId":101,
+                "menuName": "试卷列表",
+                "path":"paper",
+                "children":[]
+            }
+        ]
+      },
+      {
+        "menuId": "2",
+        "menuName": "试题管理",
+        "children":[
+            {
+                "menuId":201,
+                "menuName": "试题列表",
+                "path":"question",
+                "children":[]
+
+            }
+        ]
+      },
+      {
+        "menuId": "3",
+        "menuName": "通知管理",
+        "children":[
+            {
+                "menuId":301,
+                "menuName": "通知列表",
+                "path":"notice",
+                "children":[]
+
+            }
+        ]
+      }
+    ],
+    "message":""
+  }

@@ -1,0 +1,12 @@
+23989:C 20 May 10:49:24.523 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+23989:C 20 May 10:49:24.523 # Redis version=4.0.9, bits=64, commit=00000000, modified=0, pid=23989, just started
+23989:C 20 May 10:49:24.523 # Configuration loaded
+23998:M 20 May 10:49:24.525 # Creating Server TCP listening socket ::1:6379: bind: Cannot assign requested address
+24022:C 20 May 10:50:54.894 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+24022:C 20 May 10:50:54.894 # Redis version=4.0.9, bits=64, commit=00000000, modified=0, pid=24022, just started
+24022:C 20 May 10:50:54.894 # Configuration loaded
+24033:M 20 May 10:50:54.900 # Creating Server TCP listening socket ::1:6379: bind: Cannot assign requested address
+24214:C 20 May 10:52:25.168 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+24214:C 20 May 10:52:25.168 # Redis version=4.0.9, bits=64, commit=00000000, modified=0, pid=24214, just started
+24214:C 20 May 10:52:25.168 # Configuration loaded
+24215:M 20 May 10:52:25.170 # Creating Server TCP listening socket ::1:6379: bind: Cannot assign requested address
